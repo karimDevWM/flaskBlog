@@ -1,9 +1,18 @@
 from flask import Flask, render_template, url_for, flash, redirect
+from flask_sqlalchemy import SQLAlchemy
 from forms import RegistrationForm, LoginForm
+
 # instantiate a flask application
 app = Flask(__name__) # (__name__) indicate the name of the module
-
 app.config['SECRET_KEY'] = 'b16c56c3758a2dc2610fe2f89f3e31ea'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+db = SQLAlchemy(app)
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(deb.String(20), unique=True, nullable=False)
+    email = db.Column(deb.String(120), unique=True, nullable=False)
+    image_file = db.Column(deb.String(20), unique=True, nullable=False)
 
 # this a list that containes dictionaries containing information of post blog
 posts = [
