@@ -1,8 +1,8 @@
-from datetime import datetime
 from email.policy import default
 from flask import Flask, render_template, url_for, flash, redirect
 from flask_sqlalchemy import SQLAlchemy
 from forms import RegistrationForm, LoginForm
+from models import User, Post
 
 # instantiate a flask application
 app = Flask(__name__) # (__name__) indicate the name of the module
