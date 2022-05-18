@@ -1,27 +1,38 @@
-import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from flask_mail import Mail
+from flaskBlog.config import Config
 
-# instantiate a flask application
-app = Flask(__name__) # (__name__) indicate the name of the module
-app.config['SECRET_KEY'] = 'b16c56c3758a2dc2610fe2f89f3e31ea'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
-db = SQLAlchemy(app)
+
+db = SQLAlchemy()
 # for hashing password
-bcrypt = Bcrypt(app)
+bcrypt = Bcrypt()
 # Login manager with sessions
-login_manager = LoginManager(app)
-login_manager.login_view = 'login'
+login_manager = LoginManager()
+login_manager.login_view = 'users.login'
 login_manager.login_message_category = 'info'
 # for sending mail
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = os.environ.get('EMAIL_USER')
-app.config['MAIL_PASSWORD'] = os.environ.get('EMAIL_PASS')
-mail = Mail(app)
+mail = Mail()
 
-from flaskBlog import routes
+
+
+def create_app(confg_class=Config):
+    # instantiate a flask application
+    app = Flask(__name__) # (__name__) indicate the name of the module
+    app.config.from_object(Config)
+
+    db.init_app(app)
+    bcrypt.init_app(app)
+    login_manager.init_app(app)
+    mail.init_app(app)
+
+    from flaskBlog.users.routes import users
+    app.register_blueprint(users)
+    from flaskBlog.posts.routes import posts
+    app.register_blueprint(posts)
+    from flaskBlog.main.routes import main
+    app.register_blueprint(main)
+
+    return app
